@@ -18,7 +18,7 @@
     "y": {"field": "Stop_name", "type": "nominal", "sort": "-x", "title": "Regional Station"},
     "tooltip": [
       {"field": "Stop_name", "title": "Station"},
-      {"field": "**Pax_annual_num**", "title": "Annual Entries", "format": ","}
+      {"field": "Pax_annual_num", "title": "Annual Entries", "format": ","}
     ]
   }
 }
