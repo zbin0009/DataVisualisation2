@@ -1,0 +1,24 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Top 10 Regional train stations by annual patronage.",
+  "width": "container",
+  "height": 400,
+  "data": {"url": "regional.csv", "format": {"type": "csv"}},
+  "transform": [
+    {"calculate": "toNumber(datum.Pax_annual)", "as": "Pax_annual_num"},
+    {
+      "window": [{"op": "rank", "as": "rank"}],
+      "sort": [{"field": "Pax_annual_num", "order": "descending"}]
+    },
+    {"filter": "datum.rank <= 10"}
+  ],
+  "mark": {"type": "bar", "color": "#16a34a"},
+  "encoding": {
+    "x": {"field": "Pax_annual_num", "type": "quantitative", "title": "Annual Entries"},
+    "y": {"field": "Stop_name", "type": "nominal", "sort": "-x", "title": "Regional Station"},
+    "tooltip": [
+      {"field": "Stop_name", "title": "Station"},
+      {"field": "Pax_annual_num", "title": "Annual Entries", "format": ","}
+    ]
+  }
+}

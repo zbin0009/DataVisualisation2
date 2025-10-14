@@ -1,0 +1,71 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Map showing Victorian metro and regional train stations sized and coloured by annual patronage.",
+  "width": "container",
+  "height": 520,
+  "projection": {
+    "type": "mercator",
+    "center": [145, -37.5],
+    "scale": 6000
+  },
+  "layer": [
+    {
+      "data": {"sphere": true},
+      "mark": {"type": "geoshape", "fill": "#f9fafb", "stroke": "#e5e7eb"}
+    },
+    {
+      "data": {"graticule": {"step": [1, 1]}},
+      "mark": {"type": "geoshape", "stroke": "#d1d5db", "fill": null}
+    },
+    {
+      "data": {"url": "metro.csv", "format": {"type": "csv"}},
+      "transform": [
+        {
+          "calculate": "toNumber(datum.annual_entries)",
+          "as": "annual_entries_num"
+        },
+        {"filter": "isValid(datum.latitude) && isValid(datum.longitude) && isValid(datum.annual_entries_num)"}
+      ],
+      "mark": {"type": "circle", "color": "#2563eb", "opacity": 0.8},
+      "encoding": {
+        "longitude": {"field": "longitude", "type": "quantitative"},
+        "latitude": {"field": "latitude", "type": "quantitative"},
+        "size": {
+          "field": "annual_entries_num",
+          "type": "quantitative",
+          "title": "Annual Entries (Metro)",
+          "scale": {"range": [10, 400]}
+        },
+        "tooltip": [
+          {"field": "station_name", "title": "Station"},
+          {"field": "annual_entries_num", "title": "Annual Entries", "format": ","}
+        ]
+      }
+    },
+    {
+      "data": {"url": "regional.csv", "format": {"type": "csv"}},
+      "transform": [
+        {
+          "calculate": "toNumber(datum.Pax_annual)",
+          "as": "Pax_annual_num"
+        },
+        {"filter": "isValid(datum.Stop_lat) && isValid(datum.Stop_long) && isValid(datum.Pax_annual_num)"}
+      ],
+      "mark": {"type": "triangle-up", "color": "#16a34a", "opacity": 0.75},
+      "encoding": {
+        "longitude": {"field": "Stop_long", "type": "quantitative"},
+        "latitude": {"field": "Stop_lat", "type": "quantitative"},
+        "size": {
+          "field": "Pax_annual_num",
+          "type": "quantitative",
+          "title": "Annual Entries (Regional)",
+          "scale": {"range": [10, 250]}
+        },
+        "tooltip": [
+          {"field": "Stop_name", "title": "Station"},
+          {"field": "Pax_annual_num", "title": "Annual Entries", "format": ","}
+        ]
+      }
+    }
+  ]
+}

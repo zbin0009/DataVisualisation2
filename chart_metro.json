@@ -1,0 +1,24 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Top 10 Metro train stations by annual patronage.",
+  "width": "container",
+  "height": 400,
+  "data": {"url": "metro.csv", "format": {"type": "csv"}},
+  "transform": [
+    {"calculate": "toNumber(datum.annual_entries)", "as": "annual_entries_num"},
+    {
+      "window": [{"op": "rank", "as": "rank"}],
+      "sort": [{"field": "annual_entries_num", "order": "descending"}]
+    },
+    {"filter": "datum.rank <= 10"}
+  ],
+  "mark": {"type": "bar", "color": "#2563eb"},
+  "encoding": {
+    "x": {"field": "annual_entries_num", "type": "quantitative", "title": "Annual Entries"},
+    "y": {"field": "station_name", "type": "nominal", "sort": "-x", "title": "Metro Station"},
+    "tooltip": [
+      {"field": "station_name", "title": "Station"},
+      {"field": "annual_entries_num", "title": "Annual Entries", "format": ","}
+    ]
+  }
+}
