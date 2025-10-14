@@ -51,7 +51,7 @@
         },
         {"filter": "isValid(datum.Stop_lat) && isValid(datum.Stop_long) && isValid(datum.Pax_annual_num)"}
       ],
-      "mark": {"type": "triangle-up", "color": "#16a34a", "opacity": 0.75},
+      "mark": {"type": "point", "shape": "triangle-up", "color": "#16a34a", "opacity": 0.75},
       "encoding": {
         "longitude": {"field": "Stop_long", "type": "quantitative"},
         "latitude": {"field": "Stop_lat", "type": "quantitative"},
