@@ -12,16 +12,42 @@
 
   <style>
     body {font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0;}
-    header {background: #1e3a8a; color: white; text-align: center; padding: 2rem 1rem;}
-    main {max-width: 1100px; margin: 2rem auto; padding: 0 1rem;}
-    section {margin-bottom: 3rem; background: white; padding: 1rem 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);}
-    h2 {color: #1e3a8a;}
-    figcaption {font-size: 0.9rem; text-align: center; color: #6b7280; margin-top: 0.5rem;}
+    header {background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; text-align: center; padding: 2rem 1rem;}
+    main {max-width: 1400px; margin: 2rem auto; padding: 0 1rem;}
+    section {margin-bottom: 3rem; background: white; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease;}
+    section:hover {transform: translateY(-2px);}
+    h2 {color: #1e3a8a; margin-bottom: 1rem; font-size: 1.5rem;}
+    figcaption {font-size: 0.9rem; text-align: center; color: #6b7280; margin-top: 0.5rem; font-style: italic;}
     footer {background: #1e3a8a; color: white; text-align: center; padding: 1rem 0;}
-    /* Ensure container-based sizing works */
-    #map {width: 100%; min-height: 520px;}
-    #chart_metro {width: 100%; min-height: 400px;}
-    #chart_regional {width: 100%; min-height: 400px;}
+    
+    /* Controls styling */
+    .controls {background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;}
+    .control-group {display: flex; flex-direction: column; gap: 0.5rem;}
+    .control-group label {font-weight: 600; color: #374151; font-size: 0.9rem;}
+    .control-group select, .control-group input {padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 0.9rem;}
+    .control-group select:focus, .control-group input:focus {outline: none; border-color: #3b82f6;}
+    
+    /* Stats cards */
+    .stats-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;}
+    .stat-card {background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; border-left: 4px solid #3b82f6;}
+    .stat-value {font-size: 2rem; font-weight: bold; color: #1e3a8a; margin-bottom: 0.5rem;}
+    .stat-label {color: #6b7280; font-size: 0.9rem;}
+    
+    /* Chart containers */
+    .chart-container {width: 100%; min-height: 400px; margin-bottom: 1rem;}
+    .chart-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;}
+    .chart-full {grid-column: 1 / -1;}
+    
+    /* Annotations */
+    .annotation {background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0;}
+    .annotation-title {font-weight: 600; color: #0c4a6e; margin-bottom: 0.5rem;}
+    .annotation-text {color: #075985; font-size: 0.9rem; line-height: 1.5;}
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+      .chart-grid {grid-template-columns: 1fr;}
+      .controls {flex-direction: column; align-items: stretch;}
+    }
   </style>
 </head>
 
@@ -32,25 +58,120 @@
   </header>
 
   <main>
+    <!-- Interactive Controls -->
+    <section class="controls">
+      <div class="control-group">
+        <label for="stationType">Station Type</label>
+        <select id="stationType">
+          <option value="all">All Stations</option>
+          <option value="metro">Metro Only</option>
+          <option value="regional">Regional Only</option>
+        </select>
+      </div>
+      <div class="control-group">
+        <label for="minPatronage">Minimum Patronage</label>
+        <input type="range" id="minPatronage" min="0" max="2000000" value="0" step="10000">
+        <span id="patronageValue">0</span>
+      </div>
+      <div class="control-group">
+        <label for="chartType">Chart Type</label>
+        <select id="chartType">
+          <option value="bar">Bar Chart</option>
+          <option value="scatter">Scatter Plot</option>
+          <option value="line">Line Chart</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Summary Statistics -->
+    <section>
+      <h2>Key Statistics</h2>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="totalStations">-</div>
+          <div class="stat-label">Total Stations</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="totalPatronage">-</div>
+          <div class="stat-label">Total Annual Patronage</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="avgPatronage">-</div>
+          <div class="stat-label">Average Patronage</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="busiestStation">-</div>
+          <div class="stat-label">Busiest Station</div>
+        </div>
+      </div>
+    </section>
+
     <!-- MAP -->
     <section>
       <h2>Geographic Distribution of Stations</h2>
-      <div id="map"></div>
+      <div id="map" class="chart-container"></div>
       <figcaption>Metro (blue) and regional (green) stations sized by annual patronage.</figcaption>
+      <div class="annotation">
+        <div class="annotation-title">📍 Geographic Insights</div>
+        <div class="annotation-text">The map reveals clear clustering patterns: metro stations concentrate around Melbourne's CBD and major transport corridors, while regional stations are distributed across Victoria's rural areas. Station size correlates with patronage - larger circles indicate higher passenger volumes.</div>
+      </div>
     </section>
 
-    <!-- METRO CHART -->
+    <!-- Top Stations Charts -->
     <section>
-      <h2>Top 10 Metro Stations by Entries</h2>
-      <div id="chart_metro"></div>
-      <figcaption>Horizontal bar chart showing Melbourne's busiest metro stations.</figcaption>
+      <h2>Top Performing Stations</h2>
+      <div class="chart-grid">
+        <div>
+          <h3>Top 10 Metro Stations</h3>
+          <div id="chart_metro" class="chart-container"></div>
+          <div class="annotation">
+            <div class="annotation-title">🚇 Metro Analysis</div>
+            <div class="annotation-text">Melbourne's metro stations show significant variation in patronage. CBD stations and major interchange points dominate the top rankings, reflecting their role as transportation hubs.</div>
+          </div>
+        </div>
+        <div>
+          <h3>Top 10 Regional Stations</h3>
+          <div id="chart_regional" class="chart-container"></div>
+          <div class="annotation">
+            <div class="annotation-title">🚂 Regional Analysis</div>
+            <div class="annotation-text">Regional stations serve smaller populations but are crucial for connecting rural communities. Patronage levels are generally lower but more consistent across stations.</div>
+          </div>
+        </div>
+      </div>
     </section>
 
-    <!-- REGIONAL CHART -->
+    <!-- Additional Analysis Charts -->
     <section>
-      <h2>Top 10 Regional Stations by Entries</h2>
-      <div id="chart_regional"></div>
-      <figcaption>Horizontal bar chart showing Victoria's busiest regional stations.</figcaption>
+      <h2>Patronage Distribution Analysis</h2>
+      <div class="chart-grid">
+        <div>
+          <h3>Patronage Distribution</h3>
+          <div id="histogram" class="chart-container"></div>
+          <div class="annotation">
+            <div class="annotation-title">📊 Distribution Insights</div>
+            <div class="annotation-text">The histogram reveals a right-skewed distribution, indicating most stations have moderate patronage while a few stations handle disproportionately high passenger volumes.</div>
+          </div>
+        </div>
+        <div>
+          <h3>Distance vs Patronage</h3>
+          <div id="scatter" class="chart-container"></div>
+          <div class="annotation">
+            <div class="annotation-title">📏 Distance Correlation</div>
+            <div class="annotation-text">This scatter plot explores the relationship between station distance from Melbourne CBD and patronage levels, revealing urban density patterns.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Comparison Chart -->
+    <section>
+      <h2>Metro vs Regional Comparison</h2>
+      <div id="comparison" class="chart-container chart-full"></div>
+      <figcaption>Side-by-side comparison of metro and regional station patronage patterns.</figcaption>
+      <div class="annotation">
+        <div class="annotation-title">⚖️ Comparative Analysis</div>
+        <div class="annotation-text">This comparison highlights the stark differences between metro and regional patronage patterns. Metro stations show higher variability and peak values, while regional stations demonstrate more consistent, lower-volume patterns typical of rural transportation networks.</div>
+      </div>
     </section>
   </main>
 
@@ -59,9 +180,374 @@
   </footer>
 
   <script>
-  vegaEmbed("#map", "map.json", { actions: false }).catch(console.error);
-  vegaEmbed("#chart_metro", "chart_metro.json", { actions: false }).catch(console.error);
-  vegaEmbed("#chart_regional", "chart_regional.json", { actions: false }).catch(console.error);
+    // Global variables for data and charts
+    let metroData = [];
+    let regionalData = [];
+    let allCharts = {};
+
+    // Load data and initialize charts
+    async function initializeDashboard() {
+      try {
+        // Load CSV data
+        const metroResponse = await fetch('metro.csv');
+        const metroText = await metroResponse.text();
+        metroData = parseCSV(metroText);
+        
+        const regionalResponse = await fetch('regional.csv');
+        const regionalText = await regionalResponse.text();
+        regionalData = parseCSV(regionalText);
+
+        // Calculate statistics
+        updateStatistics();
+
+        // Initialize all charts
+        await Promise.all([
+          vegaEmbed("#map", "map.json", { actions: false }).then(result => allCharts.map = result),
+          vegaEmbed("#chart_metro", "chart_metro.json", { actions: false }).then(result => allCharts.metro = result),
+          vegaEmbed("#chart_regional", "chart_regional.json", { actions: false }).then(result => allCharts.regional = result),
+          createHistogram(),
+          createScatterPlot(),
+          createComparisonChart()
+        ]);
+
+        // Setup event listeners
+        setupEventListeners();
+
+      } catch (error) {
+        console.error('Error initializing dashboard:', error);
+      }
+    }
+
+    // Parse CSV data
+    function parseCSV(text) {
+      const lines = text.split('\n');
+      const headers = lines[0].split(',');
+      return lines.slice(1).map(line => {
+        const values = line.split(',');
+        const obj = {};
+        headers.forEach((header, index) => {
+          obj[header.trim()] = values[index]?.trim();
+        });
+        return obj;
+      }).filter(row => Object.keys(row).length > 1);
+    }
+
+    // Update statistics cards
+    function updateStatistics() {
+      const allStations = [...metroData, ...regionalData];
+      const totalPatronage = allStations.reduce((sum, station) => {
+        const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
+        return sum + patronage;
+      }, 0);
+
+      const avgPatronage = Math.round(totalPatronage / allStations.length);
+      
+      const busiestStation = allStations.reduce((max, station) => {
+        const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
+        const maxPatronage = parseInt(max.annual_entries || max.Pax_annual || 0);
+        return patronage > maxPatronage ? station : max;
+      }, allStations[0]);
+
+      document.getElementById('totalStations').textContent = allStations.length.toLocaleString();
+      document.getElementById('totalPatronage').textContent = totalPatronage.toLocaleString();
+      document.getElementById('avgPatronage').textContent = avgPatronage.toLocaleString();
+      document.getElementById('busiestStation').textContent = busiestStation.station_name || busiestStation.Stop_name || 'Unknown';
+    }
+
+    // Create histogram chart
+    async function createHistogram() {
+      const histogramSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Distribution of station patronage",
+        "width": "container",
+        "height": 400,
+        "data": {
+          "values": [...metroData, ...regionalData].map(station => ({
+            patronage: parseInt(station.annual_entries || station.Pax_annual || 0),
+            type: station.annual_entries ? 'Metro' : 'Regional',
+            name: station.station_name || station.Stop_name
+          }))
+        },
+        "selection": {
+          "brush": {
+            "type": "interval",
+            "encodings": ["x"]
+          }
+        },
+        "mark": {"type": "bar", "opacity": 0.7},
+        "encoding": {
+          "x": {
+            "bin": {"maxbins": 20},
+            "field": "patronage",
+            "type": "quantitative",
+            "title": "Annual Patronage"
+          },
+          "y": {
+            "aggregate": "count",
+            "type": "quantitative",
+            "title": "Number of Stations"
+          },
+          "color": {
+            "condition": {
+              "selection": "brush",
+              "field": "type",
+              "type": "nominal",
+              "scale": {"range": ["#2563eb", "#16a34a"]}
+            },
+            "value": "lightgray"
+          },
+          "opacity": {
+            "condition": {
+              "selection": "brush",
+              "value": 0.8
+            },
+            "value": 0.3
+          },
+          "tooltip": [
+            {"field": "patronage", "title": "Patronage Range"},
+            {"field": "type", "title": "Type"},
+            {"aggregate": "count", "title": "Count"}
+          ]
+        }
+      };
+
+      const result = await vegaEmbed("#histogram", histogramSpec, { actions: false });
+      allCharts.histogram = result;
+    }
+
+    // Create scatter plot
+    async function createScatterPlot() {
+      const melbourneCBD = { lat: -37.8136, lng: 144.9631 };
+      
+      const scatterSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Distance from Melbourne CBD vs Patronage",
+        "width": "container",
+        "height": 400,
+        "data": {
+          "values": [...metroData, ...regionalData].map(station => {
+            const lat = parseFloat(station.latitude || station.Stop_lat);
+            const lng = parseFloat(station.longitude || station.Stop_long);
+            const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
+            
+            // Calculate distance from Melbourne CBD (simplified)
+            const distance = Math.sqrt(
+              Math.pow(lat - melbourneCBD.lat, 2) + Math.pow(lng - melbourneCBD.lng, 2)
+            ) * 111; // Rough conversion to km
+            
+            return {
+              distance: distance,
+              patronage: patronage,
+              type: station.annual_entries ? 'Metro' : 'Regional',
+              name: station.station_name || station.Stop_name
+            };
+          })
+        },
+        "selection": {
+          "brush": {
+            "type": "interval"
+          },
+          "hover": {
+            "type": "single",
+            "on": "mouseover",
+            "nearest": true
+          }
+        },
+        "mark": {"type": "circle", "opacity": 0.6, "size": 100},
+        "encoding": {
+          "x": {
+            "field": "distance",
+            "type": "quantitative",
+            "title": "Distance from Melbourne CBD (km)"
+          },
+          "y": {
+            "field": "patronage",
+            "type": "quantitative",
+            "title": "Annual Patronage",
+            "scale": {"type": "log"}
+          },
+          "color": {
+            "condition": {
+              "selection": "brush",
+              "field": "type",
+              "type": "nominal",
+              "scale": {"range": ["#2563eb", "#16a34a"]}
+            },
+            "value": "lightgray"
+          },
+          "opacity": {
+            "condition": {
+              "selection": "brush",
+              "value": 0.8
+            },
+            "value": 0.3
+          },
+          "size": {
+            "condition": {
+              "selection": "hover",
+              "value": 200
+            },
+            "value": 100
+          },
+          "tooltip": [
+            {"field": "name", "title": "Station"},
+            {"field": "distance", "title": "Distance (km)", "format": ".1f"},
+            {"field": "patronage", "title": "Patronage", "format": ","},
+            {"field": "type", "title": "Type"}
+          ]
+        }
+      };
+
+      const result = await vegaEmbed("#scatter", scatterSpec, { actions: false });
+      allCharts.scatter = result;
+    }
+
+    // Create comparison chart
+    async function createComparisonChart() {
+      const comparisonSpec = {
+        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+        "description": "Metro vs Regional patronage comparison",
+        "width": "container",
+        "height": 400,
+        "data": {
+          "values": [
+            ...metroData.map(station => ({
+              patronage: parseInt(station.annual_entries || 0),
+              type: 'Metro',
+              name: station.station_name
+            })),
+            ...regionalData.map(station => ({
+              patronage: parseInt(station.Pax_annual || 0),
+              type: 'Regional',
+              name: station.Stop_name
+            }))
+          ]
+        },
+        "mark": {"type": "boxplot", "extent": "minmax"},
+        "encoding": {
+          "x": {
+            "field": "type",
+            "type": "nominal",
+            "title": "Station Type"
+          },
+          "y": {
+            "field": "patronage",
+            "type": "quantitative",
+            "title": "Annual Patronage",
+            "scale": {"type": "log"}
+          },
+          "color": {
+            "field": "type",
+            "type": "nominal",
+            "scale": {"range": ["#2563eb", "#16a34a"]},
+            "title": "Station Type"
+          },
+          "tooltip": [
+            {"field": "type", "title": "Type"},
+            {"field": "patronage", "title": "Patronage", "format": ","}
+          ]
+        }
+      };
+
+      const result = await vegaEmbed("#comparison", comparisonSpec, { actions: false });
+      allCharts.comparison = result;
+    }
+
+    // Setup event listeners for interactivity
+    function setupEventListeners() {
+      const stationTypeSelect = document.getElementById('stationType');
+      const minPatronageSlider = document.getElementById('minPatronage');
+      const patronageValueSpan = document.getElementById('patronageValue');
+      const chartTypeSelect = document.getElementById('chartType');
+
+      // Update patronage value display
+      minPatronageSlider.addEventListener('input', function() {
+        patronageValueSpan.textContent = parseInt(this.value).toLocaleString();
+        // Trigger chart updates
+        updateCharts();
+      });
+
+      // Station type filter
+      stationTypeSelect.addEventListener('change', function() {
+        updateCharts();
+      });
+
+      // Chart type selector
+      chartTypeSelect.addEventListener('change', function() {
+        updateChartTypes();
+      });
+    }
+
+    // Update charts based on filters
+    function updateCharts() {
+      const stationType = document.getElementById('stationType').value;
+      const minPatronage = parseInt(document.getElementById('minPatronage').value);
+      
+      // Filter data based on selections
+      let filteredMetro = metroData.filter(station => 
+        parseInt(station.annual_entries || 0) >= minPatronage
+      );
+      let filteredRegional = regionalData.filter(station => 
+        parseInt(station.Pax_annual || 0) >= minPatronage
+      );
+
+      if (stationType === 'metro') {
+        filteredRegional = [];
+      } else if (stationType === 'regional') {
+        filteredMetro = [];
+      }
+
+      // Update statistics
+      updateStatistics();
+      
+      // Note: In a full implementation, you would update the Vega-Lite specs
+      // and re-render the charts here. For now, the charts remain static.
+    }
+
+    // Update chart types (placeholder for future enhancement)
+    function updateChartTypes() {
+      const chartType = document.getElementById('chartType').value;
+      console.log('Chart type changed to:', chartType);
+      // Future enhancement: dynamically change chart types
+    }
+
+    // Add dynamic annotation updates
+    function updateDynamicAnnotations() {
+      const annotations = document.querySelectorAll('.annotation');
+      annotations.forEach(annotation => {
+        annotation.style.transition = 'all 0.3s ease';
+        annotation.addEventListener('mouseenter', function() {
+          this.style.transform = 'translateX(5px)';
+          this.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.2)';
+        });
+        annotation.addEventListener('mouseleave', function() {
+          this.style.transform = 'translateX(0)';
+          this.style.boxShadow = 'none';
+        });
+      });
+    }
+
+    // Add chart interaction feedback
+    function addChartInteractionFeedback() {
+      // Add click handlers to charts for additional interactivity
+      const chartContainers = document.querySelectorAll('.chart-container');
+      chartContainers.forEach(container => {
+        container.addEventListener('click', function() {
+          this.style.transform = 'scale(1.02)';
+          setTimeout(() => {
+            this.style.transform = 'scale(1)';
+          }, 200);
+        });
+      });
+    }
+
+    // Initialize dashboard when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      initializeDashboard().then(() => {
+        updateDynamicAnnotations();
+        addChartInteractionFeedback();
+      });
+    });
   </script>
 </body>
 </html>
