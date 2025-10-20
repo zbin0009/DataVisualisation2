@@ -1,0 +1,64 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Patronage distribution across Metro and Regional stations with even gridlines.",
+  "data": {
+    "url": "combined.csv",
+    "format": {"type": "csv"}
+  },
+  "transform": [
+    {
+      "calculate": "datum.annual_entries ? toNumber(datum.annual_entries) : toNumber(datum.Pax_annual)",
+      "as": "patronage"
+    },
+    {
+      "calculate": "datum.annual_entries ? 'Metro' : 'Regional'",
+      "as": "type"
+    }
+  ],
+  "width": "container",
+  "height": 400,
+  "mark": {"type": "bar", "opacity": 0.8, "stroke": "white", "strokeWidth": 0.5},
+  "encoding": {
+    "x": {
+      "bin": {"maxbins": 40},
+      "field": "patronage",
+      "type": "quantitative",
+      "title": "Annual Patronage",
+      "axis": {
+        "grid": true,
+        "gridColor": "#e5e7eb",
+        "gridOpacity": 0.6,
+        "tickCount": 8,
+        "format": "s",
+        "labelFontSize": 12,
+        "titleFontSize": 13
+      }
+    },
+    "y": {
+      "aggregate": "count",
+      "title": "Number of Stations",
+      "axis": {
+        "grid": true,
+        "gridColor": "#e5e7eb",
+        "gridOpacity": 0.6,
+        "tickCount": 8,
+        "labelFontSize": 12,
+        "titleFontSize": 13
+      }
+    },
+    "color": {
+      "field": "type",
+      "type": "nominal",
+      "title": "Station Type",
+      "scale": {"range": ["#2563eb", "#16a34a"]}
+    },
+    "tooltip": [
+      {"field": "type", "title": "Type"},
+      {"aggregate": "count", "title": "Stations"}
+    ]
+  },
+  "config": {
+    "view": {"stroke": "transparent"},
+    "axis": {"domain": false}
+  }
+}
