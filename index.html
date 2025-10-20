@@ -5,49 +5,77 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Victorian Train Station Patronage Dashboard</title>
 
-  <!-- Vega Libraries -->
+  <!-- Fonts, Vega, Leaflet -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
   <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <style>
-    body {font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; margin: 0;}
-    header {background: linear-gradient(135deg, #1e3a8a, #3b82f6); color: white; text-align: center; padding: 2rem 1rem;}
-    main {max-width: 1400px; margin: 2rem auto; padding: 0 1rem;}
-    section {margin-bottom: 3rem; background: white; padding: 1.5rem 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease;}
-    section:hover {transform: translateY(-2px);}
-    h2 {color: #1e3a8a; margin-bottom: 1rem; font-size: 1.5rem;}
-    figcaption {font-size: 0.9rem; text-align: center; color: #6b7280; margin-top: 0.5rem; font-style: italic;}
-    footer {background: #1e3a8a; color: white; text-align: center; padding: 1rem 0;}
-    
-    /* Controls styling */
-    .controls {background: white; padding: 1.5rem; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); margin-bottom: 2rem; display: flex; gap: 2rem; align-items: center; flex-wrap: wrap;}
-    .control-group {display: flex; flex-direction: column; gap: 0.5rem;}
-    .control-group label {font-weight: 600; color: #374151; font-size: 0.9rem;}
-    .control-group select, .control-group input {padding: 0.5rem; border: 2px solid #e5e7eb; border-radius: 6px; font-size: 0.9rem;}
-    .control-group select:focus, .control-group input:focus {outline: none; border-color: #3b82f6;}
-    
-    /* Stats cards */
-    .stats-grid {display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2rem;}
-    .stat-card {background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); text-align: center; border-left: 4px solid #3b82f6;}
-    .stat-value {font-size: 2rem; font-weight: bold; color: #1e3a8a; margin-bottom: 0.5rem;}
-    .stat-label {color: #6b7280; font-size: 0.9rem;}
-    
-    /* Chart containers */
-    .chart-container {width: 100%; min-height: 400px; margin-bottom: 1rem;}
-    .chart-grid {display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;}
-    .chart-full {grid-column: 1 / -1;}
-    
-    /* Annotations */
-    .annotation {background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 1rem; margin: 1rem 0; border-radius: 0 8px 8px 0;}
-    .annotation-title {font-weight: 600; color: #0c4a6e; margin-bottom: 0.5rem;}
-    .annotation-text {color: #075985; font-size: 0.9rem; line-height: 1.5;}
-    
-    /* Responsive design */
-    @media (max-width: 768px) {
-      .chart-grid {grid-template-columns: 1fr;}
-      .controls {flex-direction: column; align-items: stretch;}
+    body { font-family: 'Inter', sans-serif; background:#f8fafc; color:#1e293b; margin:0; }
+    header { background:linear-gradient(135deg,#1e3a8a,#3b82f6); color:#fff; text-align:center; padding:2rem 1rem; }
+    main { max-width:1400px; margin:2rem auto; padding:0 1rem; }
+    section { margin-bottom:2.5rem; background:#fff; padding:1.5rem 2rem; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.08); }
+    h2 { color:#1e3a8a; margin:0 0 1rem; font-size:1.5rem; }
+    h3 { color:#1e3a8a; margin:.2rem 0 1rem; }
+    footer { background:#1e3a8a; color:#fff; text-align:center; padding:1rem 0; }
+
+    /* Summary Section */
+    .stats-section {
+      background: linear-gradient(180deg, #f9fafb, #eef2ff);
+      border-radius: 16px;
+      padding: 2rem;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+      margin-bottom: 1rem;
     }
+    .stats-header { text-align:center; margin-bottom:1.4rem; }
+    .stats-header h2 { font-size:1.8rem; font-weight:700; color:#1e3a8a; margin-bottom:.35rem; }
+    .stats-subtext { color:#475569; font-size:.95rem; }
+    .stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:1.2rem; margin-top:1.2rem; }
+
+    .stat-card {
+      background:#fff; padding:1.2rem 1rem; border-radius:14px; position:relative; overflow:hidden;
+      transition:.25s; box-shadow:0 4px 10px rgba(0,0,0,.06); height:180px;
+      display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    }
+    .stat-card::before { content:""; position:absolute; top:0; left:0; width:100%; height:4px; background:linear-gradient(90deg,#3b82f6,#1e40af); }
+    .stat-card.gold::before { background:linear-gradient(90deg,#facc15,#f59e0b); }
+    .stat-icon { font-size:1.6rem; color:#3b82f6; }
+    .stat-card.gold .stat-icon { color:#f59e0b; }
+    .stat-value { font-size:1.9rem; font-weight:700; color:#1e3a8a; margin-top:.45rem; }
+    .stat-value.name { font-size:1.55rem; max-width:280px; text-align:center; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; overflow:hidden; }
+    .stat-label { color:#64748b; font-size:.9rem; margin-top:.35rem; }
+    .stats-note { text-align:center; color:#64748b; font-size:.85rem; font-style:italic; margin-top:1rem; }
+
+    /* Controls */
+    .controls {
+      background:#fff; padding:1.2rem 2rem; border-radius:16px; box-shadow:0 4px 12px rgba(0,0,0,.06);
+      margin:0 auto 2rem; display:flex; justify-content:center; gap:2.5rem; flex-wrap:wrap; max-width:760px;
+    }
+    .control-group { display:flex; flex-direction:column; gap:.5rem; align-items:center; }
+    .control-group label { font-weight:600; color:#374151; font-size:.9rem; }
+    .control-group select, .control-group input { padding:.5rem; border:2px solid #e5e7eb; border-radius:6px; font-size:.9rem; }
+    .control-group select:focus, .control-group input:focus { outline:none; border-color:#3b82f6; }
+
+    /* Charts */
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; margin-bottom:2rem; }
+    @media (max-width:768px){ .chart-grid { grid-template-columns:1fr; } }
+
+    .chart-container { width:100%; min-height:400px; margin-bottom:1rem; }
+
+    .annotation-box {
+      background:#f0f9ff; border-left:4px solid #0ea5e9; padding:.8rem 1rem; border-radius:0 8px 8px 0;
+      margin-top:.5rem; box-shadow:0 2px 6px rgba(0,0,0,.05);
+    }
+    .annotation-title { font-weight:600; color:#0c4a6e; margin-bottom:.3rem; }
+    .annotation-text { color:#075985; font-size:.9rem; line-height:1.5; }
+
+    #map-container { height:600px; width:100%; border-radius:10px; border:1px solid #e5e7eb; }
+
+    a { color:#1e40af; text-decoration:none; }
+    a:hover { text-decoration:underline; }
   </style>
 </head>
 
@@ -58,7 +86,22 @@
   </header>
 
   <main>
-    <!-- Interactive Controls -->
+    <!-- Summary Section -->
+    <section class="stats-section">
+      <div class="stats-header">
+        <h2>Summary Insights</h2>
+        <p class="stats-subtext">Key patronage metrics across selected stations (excludes Southern Cross for clarity).</p>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><div class="stat-icon">🏙️</div><div class="stat-value" id="totalStations">-</div><div class="stat-label">Total Stations</div></div>
+        <div class="stat-card"><div class="stat-icon">🚉</div><div class="stat-value" id="totalPatronage">-</div><div class="stat-label">Total Annual Patronage</div></div>
+        <div class="stat-card"><div class="stat-icon">📊</div><div class="stat-value" id="avgPatronage">-</div><div class="stat-label">Average Patronage</div></div>
+        <div class="stat-card gold"><div class="stat-icon">⭐</div><div class="stat-value name" id="busiestStation">-</div><div class="stat-label">Busiest Station</div></div>
+      </div>
+      <div class="stats-note">Figures update automatically based on filters below. Southern Cross excluded to reduce outlier bias.</div>
+    </section>
+
+    <!-- Controls (Summary Only) -->
     <section class="controls">
       <div class="control-group">
         <label for="stationType">Station Type</label>
@@ -69,485 +112,367 @@
         </select>
       </div>
       <div class="control-group">
-        <label for="minPatronage">Minimum Patronage</label>
-        <input type="range" id="minPatronage" min="0" max="2000000" value="0" step="10000">
+        <label for="minPatronage">Minimum Patronage (Summary)</label>
+        <input type="range" id="minPatronage" min="0" max="20000000" value="0" step="100000">
         <span id="patronageValue">0</span>
       </div>
-      <div class="control-group">
-        <label for="chartType">Chart Type</label>
-        <select id="chartType">
-          <option value="bar">Bar Chart</option>
-          <option value="scatter">Scatter Plot</option>
-          <option value="line">Line Chart</option>
-        </select>
-      </div>
     </section>
 
-    <!-- Summary Statistics -->
+    <!-- Map -->
     <section>
-      <h2>Key Statistics</h2>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-value" id="totalStations">-</div>
-          <div class="stat-label">Total Stations</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="totalPatronage">-</div>
-          <div class="stat-label">Total Annual Patronage</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="avgPatronage">-</div>
-          <div class="stat-label">Average Patronage</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-value" id="busiestStation">-</div>
-          <div class="stat-label">Busiest Station</div>
-        </div>
+      <h2>Victorian Railway Network (Interactive Map)</h2>
+      <div id="map-container"></div>
+      <div class="annotation-box">
+        <div class="annotation-title">🗺️ Analysis:</div>
+        <div class="annotation-text">Metro stations cluster around Melbourne, while regional routes spread to outer towns. Larger circles mark higher passenger volumes.</div>
       </div>
     </section>
 
-    <!-- MAP -->
-    <section>
-      <h2>Geographic Distribution of Stations</h2>
-      <div id="map" class="chart-container"></div>
-      <figcaption>Metro (blue) and regional (green) stations sized by annual patronage.</figcaption>
-      <div class="annotation">
-        <div class="annotation-title">📍 Geographic Insights</div>
-        <div class="annotation-text">The map reveals clear clustering patterns: metro stations concentrate around Melbourne's CBD and major transport corridors, while regional stations are distributed across Victoria's rural areas. Station size correlates with patronage - larger circles indicate higher passenger volumes.</div>
-      </div>
-    </section>
-
-    <!-- Top Stations Charts -->
+    <!-- Top Performing (static charts from JSON specs) -->
     <section>
       <h2>Top Performing Stations</h2>
       <div class="chart-grid">
         <div>
           <h3>Top 10 Metro Stations</h3>
           <div id="chart_metro" class="chart-container"></div>
-          <div class="annotation">
-            <div class="annotation-title">🚇 Metro Analysis</div>
-            <div class="annotation-text">Melbourne's metro stations show significant variation in patronage. CBD stations and major interchange points dominate the top rankings, reflecting their role as transportation hubs.</div>
+          <div class="annotation-box">
+            <div class="annotation-title">🏆 Metro Analysis:</div>
+            <div class="annotation-text">Flinders Street dominates due to interchange traffic. Southern Cross excluded to remove bias from interstate connections.</div>
           </div>
         </div>
         <div>
           <h3>Top 10 Regional Stations</h3>
           <div id="chart_regional" class="chart-container"></div>
-          <div class="annotation">
-            <div class="annotation-title">🚂 Regional Analysis</div>
-            <div class="annotation-text">Regional stations serve smaller populations but are crucial for connecting rural communities. Patronage levels are generally lower but more consistent across stations.</div>
+          <div class="annotation-box">
+            <div class="annotation-title">🚆 Regional Analysis:</div>
+            <div class="annotation-text">Tarneit, Wyndham Vale, and Geelong lead regional patronage, reflecting rapid suburban growth in Melbourne’s west.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Additional Analysis Charts -->
+    <!-- Chart Slider (for the 4 analytical charts) -->
+    <section class="controls">
+      <div class="control-group">
+        <label for="graphMinPatronage">Chart Data Filter — Adjust Minimum Patronage</label>
+        <input type="range" id="graphMinPatronage" min="0" max="20000000" value="0" step="100000">
+        <span id="graphPatronageValue">0</span>
+      </div>
+    </section>
+
+    <!-- Patronage Distribution -->
     <section>
       <h2>Patronage Distribution Analysis</h2>
       <div class="chart-grid">
         <div>
           <h3>Patronage Distribution</h3>
           <div id="histogram" class="chart-container"></div>
-          <div class="annotation">
-            <div class="annotation-title">📊 Distribution Insights</div>
-            <div class="annotation-text">The histogram reveals a right-skewed distribution, indicating most stations have moderate patronage while a few stations handle disproportionately high passenger volumes.</div>
+          <div class="annotation-box">
+            <div class="annotation-title">📊 Interpretation:</div>
+            <div class="annotation-text">A right-skewed pattern appears — a few busy CBD stations serve most passengers, while suburban stops have moderate patronage.</div>
           </div>
         </div>
         <div>
-          <h3>Distance vs Patronage</h3>
+          <h3>Distance from CBD vs Patronage</h3>
           <div id="scatter" class="chart-container"></div>
-          <div class="annotation">
-            <div class="annotation-title">📏 Distance Correlation</div>
-            <div class="annotation-text">This scatter plot explores the relationship between station distance from Melbourne CBD and patronage levels, revealing urban density patterns.</div>
+          <div class="annotation-box">
+            <div class="annotation-title">📈 Correlation Insight:</div>
+            <div class="annotation-text">Patronage generally decreases with distance from Melbourne’s CBD, though major regional hubs like Geelong remain strong outliers.</div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Comparison Chart -->
+    <!-- Metro vs Regional -->
     <section>
       <h2>Metro vs Regional Comparison</h2>
-      <div id="comparison" class="chart-container chart-full"></div>
-      <figcaption>Side-by-side comparison of metro and regional station patronage patterns.</figcaption>
-      <div class="annotation">
-        <div class="annotation-title">⚖️ Comparative Analysis</div>
-        <div class="annotation-text">This comparison highlights the stark differences between metro and regional patronage patterns. Metro stations show higher variability and peak values, while regional stations demonstrate more consistent, lower-volume patterns typical of rural transportation networks.</div>
+      <div class="chart-grid">
+        <div>
+          <h3>Distribution of Annual Patronage (Boxplot)</h3>
+          <div id="comparison" class="chart-container"></div>
+          <div class="annotation-box">
+            <div class="annotation-title">📦 Boxplot Summary:</div>
+            <div class="annotation-text">Metro stations show a wider range of patronage levels, from small suburban stops to major terminals, while regional sites cluster tightly.</div>
+          </div>
+        </div>
+        <div>
+          <h3>Total Patronage Share (Proportion)</h3>
+          <div id="share" class="chart-container"></div>
+          <div class="annotation-box">
+            <div class="annotation-title">🥧 Share Analysis:</div>
+            <div class="annotation-text">Metro stations make up almost 90% of all passenger traffic in Victoria, emphasizing the city-centric nature of rail demand.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- References Section -->
+    <section>
+      <h2>References</h2>
+      <div class="annotation-box">
+        <div class="annotation-title">📚 Data & Tools:</div>
+        <div class="annotation-text">
+          <p>
+            <a href="https://discover.data.vic.gov.au/dataset/annual-regional-train-station-patronage-station-entries/resource/a5d6eb97-0555-4c8d-9dc7-316c6062cc57?utm_source" target="_blank">
+              Annual Regional Train Station Patronage – Data.Vic (2022–2025)
+            </a><br>
+            <a href="https://discover.data.vic.gov.au/dataset/annual-metropolitan-train-station-patronage-station-entries/resource/c9507eb5-aa48-4a43-aa09-c10a24d1f2fe?utm_source" target="_blank">
+              Annual Metropolitan Train Station Patronage – Data.Vic (2022–2025)
+            </a><br>
+            <a href="https://transport.vic.gov.au/" target="_blank">
+              Department of Transport and Planning – Victoria
+            </a><br>
+            <a href="https://vega.github.io/vega-lite/" target="_blank">
+              Vega-Lite Visualisation Framework
+            </a><br>
+            <a href="https://leafletjs.com/" target="_blank">
+              Leaflet Interactive Mapping Library
+            </a>
+          </p>
+          <p style="color:#475569; font-size:0.9rem;">
+            Data sourced from the official Victorian Government Open Data Portal (<strong>Data.Vic</strong>) 
+            and visualised using <strong>Vega-Lite</strong> and <strong>Leaflet.js</strong>. 
+            All data are provided under the 
+            <em>Creative Commons Attribution 4.0 International (CC BY 4.0)</em> license.
+          </p>
+        </div>
       </div>
     </section>
   </main>
 
-  <footer>
-    FIT3179 Data Visualisation 2 • Monash University • 2025
-  </footer>
+  <footer>FIT3179 Data Visualisation 2 • Monash University • 2025</footer>
 
+  <!-- JavaScript -->
   <script>
-    // Global variables for data and charts
-    let metroData = [];
-    let regionalData = [];
-    let allCharts = {};
-
-    // Load data and initialize charts
-    async function initializeDashboard() {
-      try {
-        // Load CSV data
-        const metroResponse = await fetch('metro.csv');
-        const metroText = await metroResponse.text();
-        metroData = parseCSV(metroText);
-        
-        const regionalResponse = await fetch('regional.csv');
-        const regionalText = await regionalResponse.text();
-        regionalData = parseCSV(regionalText);
-
-        // Calculate statistics
-        updateStatistics();
-
-        // Initialize all charts
-        await Promise.all([
-          vegaEmbed("#map", "map.json", { actions: false }).then(result => allCharts.map = result),
-          vegaEmbed("#chart_metro", "chart_metro.json", { actions: false }).then(result => allCharts.metro = result),
-          vegaEmbed("#chart_regional", "chart_regional.json", { actions: false }).then(result => allCharts.regional = result),
-          createHistogram(),
-          createScatterPlot(),
-          createComparisonChart()
-        ]);
-
-        // Setup event listeners
-        setupEventListeners();
-
-      } catch (error) {
-        console.error('Error initializing dashboard:', error);
+    /* ---------- Robust CSV parsing ---------- */
+    function splitCSVLine(line) {
+      const out = []; let cur = ""; let q = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') {
+          if (q && line[i+1] === '"') { cur += '"'; i++; }
+          else { q = !q; }
+        } else if (c === ',' && !q) { out.push(cur); cur = ""; }
+        else { cur += c; }
       }
+      out.push(cur);
+      return out;
     }
-
-    // Parse CSV data
     function parseCSV(text) {
-      const lines = text.split('\n');
-      const headers = lines[0].split(',');
-      return lines.slice(1).map(line => {
-        const values = line.split(',');
+      const rows = text.replace(/\r/g,'').split('\n').filter(Boolean);
+      const headers = splitCSVLine(rows[0]).map(h => h.trim());
+      return rows.slice(1).map(r => {
+        const vals = splitCSVLine(r);
         const obj = {};
-        headers.forEach((header, index) => {
-          obj[header.trim()] = values[index]?.trim();
-        });
+        headers.forEach((h,i)=> obj[h] = (vals[i] ?? '').trim());
         return obj;
-      }).filter(row => Object.keys(row).length > 1);
+      }).filter(o => headers.some(h => o[h] !== ''));
     }
 
-    // Update statistics cards
-    function updateStatistics() {
-      const allStations = [...metroData, ...regionalData];
-      const totalPatronage = allStations.reduce((sum, station) => {
-        const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
-        return sum + patronage;
-      }, 0);
+    /* ---------- Globals ---------- */
+    let allMetroData = [], allRegionalData = [];
+    const SOUTHERN_CROSS_RE = /southern\s*cross/i;
+    let leafletMap, stationMarkers;
 
-      const avgPatronage = Math.round(totalPatronage / allStations.length);
-      
-      const busiestStation = allStations.reduce((max, station) => {
-        const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
-        const maxPatronage = parseInt(max.annual_entries || max.Pax_annual || 0);
-        return patronage > maxPatronage ? station : max;
-      }, allStations[0]);
+    /* ---------- Init ---------- */
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Load CSVs
+      const metroText = await (await fetch('metro.csv')).text();
+      const regionalText = await (await fetch('regional.csv')).text();
+      allMetroData = parseCSV(metroText);
+      allRegionalData = parseCSV(regionalText);
 
-      document.getElementById('totalStations').textContent = allStations.length.toLocaleString();
-      document.getElementById('totalPatronage').textContent = totalPatronage.toLocaleString();
-      document.getElementById('avgPatronage').textContent = avgPatronage.toLocaleString();
-      document.getElementById('busiestStation').textContent = busiestStation.station_name || busiestStation.Stop_name || 'Unknown';
+      // Map
+      initMap();
+
+      // Static Top10 charts from JSON specs
+      vegaEmbed("#chart_metro", "chart_metro.json", {actions:false});
+      vegaEmbed("#chart_regional", "chart_regional.json", {actions:false});
+
+      // First renders
+      updateSummaryDashboard();
+      updateGraphDashboard();
+
+      // UI handlers
+      document.getElementById('stationType').addEventListener('change', updateSummaryDashboard);
+      const sliderSummary = document.getElementById('minPatronage');
+      const valSummary = document.getElementById('patronageValue');
+      valSummary.textContent = (+sliderSummary.value).toLocaleString();
+      sliderSummary.addEventListener('input', () => valSummary.textContent = (+sliderSummary.value).toLocaleString());
+      sliderSummary.addEventListener('change', updateSummaryDashboard);
+
+      const sliderCharts = document.getElementById('graphMinPatronage');
+      const valCharts = document.getElementById('graphPatronageValue');
+      valCharts.textContent = (+sliderCharts.value).toLocaleString();
+      sliderCharts.addEventListener('input', () => valCharts.textContent = (+sliderCharts.value).toLocaleString());
+      sliderCharts.addEventListener('change', updateGraphDashboard);
+    });
+
+    /* ---------- Map ---------- */
+    function initMap() {
+      leafletMap = L.map('map-container').setView([-37.8136, 144.9631], 10);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18 }).addTo(leafletMap);
+      stationMarkers = L.layerGroup().addTo(leafletMap);
     }
-
-    // Create histogram chart
-    async function createHistogram() {
-      const histogramSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Distribution of station patronage",
-        "width": "container",
-        "height": 400,
-        "data": {
-          "values": [...metroData, ...regionalData].map(station => ({
-            patronage: parseInt(station.annual_entries || station.Pax_annual || 0),
-            type: station.annual_entries ? 'Metro' : 'Regional',
-            name: station.station_name || station.Stop_name
-          }))
-        },
-        "selection": {
-          "brush": {
-            "type": "interval",
-            "encodings": ["x"]
-          }
-        },
-        "mark": {"type": "bar", "opacity": 0.7},
-        "encoding": {
-          "x": {
-            "bin": {"maxbins": 20},
-            "field": "patronage",
-            "type": "quantitative",
-            "title": "Annual Patronage"
-          },
-          "y": {
-            "aggregate": "count",
-            "type": "quantitative",
-            "title": "Number of Stations"
-          },
-          "color": {
-            "condition": {
-              "selection": "brush",
-              "field": "type",
-              "type": "nominal",
-              "scale": {"range": ["#2563eb", "#16a34a"]}
-            },
-            "value": "lightgray"
-          },
-          "opacity": {
-            "condition": {
-              "selection": "brush",
-              "value": 0.8
-            },
-            "value": 0.3
-          },
-          "tooltip": [
-            {"field": "patronage", "title": "Patronage Range"},
-            {"field": "type", "title": "Type"},
-            {"aggregate": "count", "title": "Count"}
-          ]
+    function updateMap(metro, regional) {
+      stationMarkers.clearLayers();
+      metro.forEach(s => {
+        const lat = parseFloat(s.latitude), lon = parseFloat(s.longitude);
+        const entries = parseInt(s.annual_entries);
+        if (!isNaN(lat) && !isNaN(lon) && entries) {
+          const radius = Math.max(2, Math.sqrt(entries)/400);
+          L.circleMarker([lat,lon], { radius, color:"#1e3a8a", fillColor:"#3b82f6", fillOpacity:.75, weight:1 })
+           .bindPopup(`<b>${s.station_name}</b><br>Annual Entries: ${entries.toLocaleString()}`)
+           .addTo(stationMarkers);
         }
-      };
-
-      const result = await vegaEmbed("#histogram", histogramSpec, { actions: false });
-      allCharts.histogram = result;
-    }
-
-    // Create scatter plot
-    async function createScatterPlot() {
-      const melbourneCBD = { lat: -37.8136, lng: 144.9631 };
-      
-      const scatterSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Distance from Melbourne CBD vs Patronage",
-        "width": "container",
-        "height": 400,
-        "data": {
-          "values": [...metroData, ...regionalData].map(station => {
-            const lat = parseFloat(station.latitude || station.Stop_lat);
-            const lng = parseFloat(station.longitude || station.Stop_long);
-            const patronage = parseInt(station.annual_entries || station.Pax_annual || 0);
-            
-            // Calculate distance from Melbourne CBD (simplified)
-            const distance = Math.sqrt(
-              Math.pow(lat - melbourneCBD.lat, 2) + Math.pow(lng - melbourneCBD.lng, 2)
-            ) * 111; // Rough conversion to km
-            
-            return {
-              distance: distance,
-              patronage: patronage,
-              type: station.annual_entries ? 'Metro' : 'Regional',
-              name: station.station_name || station.Stop_name
-            };
-          })
-        },
-        "selection": {
-          "brush": {
-            "type": "interval"
-          },
-          "hover": {
-            "type": "single",
-            "on": "mouseover",
-            "nearest": true
-          }
-        },
-        "mark": {"type": "circle", "opacity": 0.6, "size": 100},
-        "encoding": {
-          "x": {
-            "field": "distance",
-            "type": "quantitative",
-            "title": "Distance from Melbourne CBD (km)"
-          },
-          "y": {
-            "field": "patronage",
-            "type": "quantitative",
-            "title": "Annual Patronage",
-            "scale": {"type": "log"}
-          },
-          "color": {
-            "condition": {
-              "selection": "brush",
-              "field": "type",
-              "type": "nominal",
-              "scale": {"range": ["#2563eb", "#16a34a"]}
-            },
-            "value": "lightgray"
-          },
-          "opacity": {
-            "condition": {
-              "selection": "brush",
-              "value": 0.8
-            },
-            "value": 0.3
-          },
-          "size": {
-            "condition": {
-              "selection": "hover",
-              "value": 200
-            },
-            "value": 100
-          },
-          "tooltip": [
-            {"field": "name", "title": "Station"},
-            {"field": "distance", "title": "Distance (km)", "format": ".1f"},
-            {"field": "patronage", "title": "Patronage", "format": ","},
-            {"field": "type", "title": "Type"}
-          ]
-        }
-      };
-
-      const result = await vegaEmbed("#scatter", scatterSpec, { actions: false });
-      allCharts.scatter = result;
-    }
-
-    // Create comparison chart
-    async function createComparisonChart() {
-      const comparisonSpec = {
-        "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-        "description": "Metro vs Regional patronage comparison",
-        "width": "container",
-        "height": 400,
-        "data": {
-          "values": [
-            ...metroData.map(station => ({
-              patronage: parseInt(station.annual_entries || 0),
-              type: 'Metro',
-              name: station.station_name
-            })),
-            ...regionalData.map(station => ({
-              patronage: parseInt(station.Pax_annual || 0),
-              type: 'Regional',
-              name: station.Stop_name
-            }))
-          ]
-        },
-        "mark": {"type": "boxplot", "extent": "minmax"},
-        "encoding": {
-          "x": {
-            "field": "type",
-            "type": "nominal",
-            "title": "Station Type"
-          },
-          "y": {
-            "field": "patronage",
-            "type": "quantitative",
-            "title": "Annual Patronage",
-            "scale": {"type": "log"}
-          },
-          "color": {
-            "field": "type",
-            "type": "nominal",
-            "scale": {"range": ["#2563eb", "#16a34a"]},
-            "title": "Station Type"
-          },
-          "tooltip": [
-            {"field": "type", "title": "Type"},
-            {"field": "patronage", "title": "Patronage", "format": ","}
-          ]
-        }
-      };
-
-      const result = await vegaEmbed("#comparison", comparisonSpec, { actions: false });
-      allCharts.comparison = result;
-    }
-
-    // Setup event listeners for interactivity
-    function setupEventListeners() {
-      const stationTypeSelect = document.getElementById('stationType');
-      const minPatronageSlider = document.getElementById('minPatronage');
-      const patronageValueSpan = document.getElementById('patronageValue');
-      const chartTypeSelect = document.getElementById('chartType');
-
-      // Update patronage value display
-      minPatronageSlider.addEventListener('input', function() {
-        patronageValueSpan.textContent = parseInt(this.value).toLocaleString();
-        // Trigger chart updates
-        updateCharts();
       });
-
-      // Station type filter
-      stationTypeSelect.addEventListener('change', function() {
-        updateCharts();
-      });
-
-      // Chart type selector
-      chartTypeSelect.addEventListener('change', function() {
-        updateChartTypes();
+      regional.forEach(s => {
+        const lat = parseFloat(s.Stop_lat), lon = parseFloat(s.Stop_long);
+        const entries = parseInt(s.Pax_annual);
+        if (!isNaN(lat) && !isNaN(lon) && entries) {
+          const radius = Math.max(2, Math.sqrt(entries)/400);
+          L.circleMarker([lat,lon], { radius, color:"#166534", fillColor:"#22c55e", fillOpacity:.7, weight:1 })
+           .bindPopup(`<b>${s.Stop_name}</b><br>Annual Entries: ${entries.toLocaleString()}`)
+           .addTo(stationMarkers);
+        }
       });
     }
 
-    // Update charts based on filters
-    function updateCharts() {
-      const stationType = document.getElementById('stationType').value;
-      const minPatronage = parseInt(document.getElementById('minPatronage').value);
-      
-      // Filter data based on selections
-      let filteredMetro = metroData.filter(station => 
-        parseInt(station.annual_entries || 0) >= minPatronage
-      );
-      let filteredRegional = regionalData.filter(station => 
-        parseInt(station.Pax_annual || 0) >= minPatronage
-      );
+    /* ---------- Dashboard update (separated) ---------- */
+    function updateSummaryDashboard() {
+      const type = document.getElementById('stationType').value;
+      const minP = parseInt(document.getElementById('minPatronage').value);
 
-      if (stationType === 'metro') {
-        filteredRegional = [];
-      } else if (stationType === 'regional') {
-        filteredMetro = [];
+      let metro = allMetroData.filter(d => (parseInt(d.annual_entries)||0) >= minP && !SOUTHERN_CROSS_RE.test(d.station_name||''));
+      let regional = allRegionalData.filter(d => (parseInt(d.Pax_annual)||0) >= minP && !SOUTHERN_CROSS_RE.test(d.Stop_name||''));
+
+      if (type === 'metro') regional = [];
+      if (type === 'regional') metro = [];
+
+      updateStats(metro, regional);
+    }
+
+    function updateGraphDashboard() {
+      const minP = parseInt(document.getElementById('graphMinPatronage').value);
+
+      let metro = allMetroData.filter(d => (parseInt(d.annual_entries)||0) >= minP && !SOUTHERN_CROSS_RE.test(d.station_name||''));
+      let regional = allRegionalData.filter(d => (parseInt(d.Pax_annual)||0) >= minP && !SOUTHERN_CROSS_RE.test(d.Stop_name||''));
+
+      updateMap(metro, regional);
+      renderHistogram(metro, regional);
+      renderScatter(metro, regional);
+      renderComparison(metro, regional);
+    }
+
+    function updateStats(metro, regional) {
+      const all = [...metro, ...regional];
+      const total = all.reduce((s,d)=> s + (parseInt(d.annual_entries||d.Pax_annual)||0), 0);
+      const avg = all.length ? Math.round(total / all.length) : 0;
+
+      let busiest = null, maxP = -1;
+      for (const s of all) {
+        const p = parseInt(s.annual_entries || s.Pax_annual) || 0;
+        if (p > maxP) { maxP = p; busiest = s; }
       }
 
-      // Update statistics
-      updateStatistics();
-      
-      // Note: In a full implementation, you would update the Vega-Lite specs
-      // and re-render the charts here. For now, the charts remain static.
+      document.getElementById('totalStations').textContent = (all.length||0).toLocaleString();
+      document.getElementById('totalPatronage').textContent = total.toLocaleString();
+      document.getElementById('avgPatronage').textContent = avg.toLocaleString();
+
+      const busiestEl = document.getElementById('busiestStation');
+      const fullName = busiest ? (busiest.station_name || busiest.Stop_name || 'N/A') : 'N/A';
+      busiestEl.textContent = fullName.length > 34 ? fullName.slice(0,33) + '…' : fullName;
+      busiestEl.title = fullName;
     }
 
-    // Update chart types (placeholder for future enhancement)
-    function updateChartTypes() {
-      const chartType = document.getElementById('chartType').value;
-      console.log('Chart type changed to:', chartType);
-      // Future enhancement: dynamically change chart types
+    /* ---------- Charts ---------- */
+    function renderHistogram(metro, regional) {
+      const data = [...metro, ...regional].map(s => ({
+        patronage: parseInt(s.annual_entries || s.Pax_annual) || 0,
+        type: s.annual_entries ? 'Metro' : 'Regional'
+      }));
+
+      const spec = {
+        "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+        "data":{"values":data},
+        "mark":{"type":"bar","opacity":0.85},
+        "encoding":{
+          "x":{"field":"patronage","type":"quantitative","bin":{"maxbins":30},"title":"Annual Patronage"},
+          "y":{"aggregate":"count","title":"Number of Stations"},
+          "color":{"field":"type","title":"Station Type","scale":{"range":["#2563eb","#16a34a"]}}
+        },
+        "width":"container","height":400,"config":{"view":{"stroke":"transparent"}}
+      };
+      vegaEmbed("#histogram", spec, {actions:false});
     }
 
-    // Add dynamic annotation updates
-    function updateDynamicAnnotations() {
-      const annotations = document.querySelectorAll('.annotation');
-      annotations.forEach(annotation => {
-        annotation.style.transition = 'all 0.3s ease';
-        annotation.addEventListener('mouseenter', function() {
-          this.style.transform = 'translateX(5px)';
-          this.style.boxShadow = '0 4px 12px rgba(14, 165, 233, 0.2)';
-        });
-        annotation.addEventListener('mouseleave', function() {
-          this.style.transform = 'translateX(0)';
-          this.style.boxShadow = 'none';
-        });
+    function renderScatter(metro, regional) {
+      const cbd = { lat:-37.8136, lng:144.9631 };
+      const data = [...metro, ...regional].map(s => {
+        const lat = parseFloat(s.latitude || s.Stop_lat);
+        const lon = parseFloat(s.longitude || s.Stop_long);
+        const p = parseInt(s.annual_entries || s.Pax_annual) || 0;
+        // crude distance: Euclidean difference degrees -> km approx
+        const dist = Math.sqrt(Math.pow(lat-cbd.lat,2) + Math.pow(lon-cbd.lng,2)) * 111;
+        return { distance:dist, patronage:p, type:s.annual_entries?'Metro':'Regional', name:s.station_name || s.Stop_name };
       });
+
+      const spec = {
+        "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+        "data":{"values":data},
+        "mark":{"type":"point","opacity":0.75,"filled":true,"size":60},
+        "encoding":{
+          "x":{"field":"distance","type":"quantitative","title":"Distance from CBD (km)"},
+          "y":{"field":"patronage","type":"quantitative","title":"Annual Patronage (Log Scale)","scale":{"type":"log"}},
+          "color":{"field":"type","title":"Station Type","scale":{"range":["#2563eb","#16a34a"]}},
+          "tooltip":[
+            {"field":"name","title":"Station"},
+            {"field":"distance","title":"Distance (km)","format":".1f"},
+            {"field":"patronage","title":"Annual Patronage","format":","}
+          ]
+        },
+        "width":"container","height":420,"config":{"view":{"stroke":"transparent"}}
+      };
+      vegaEmbed("#scatter", spec, {actions:false});
     }
 
-    // Add chart interaction feedback
-    function addChartInteractionFeedback() {
-      // Add click handlers to charts for additional interactivity
-      const chartContainers = document.querySelectorAll('.chart-container');
-      chartContainers.forEach(container => {
-        container.addEventListener('click', function() {
-          this.style.transform = 'scale(1.02)';
-          setTimeout(() => {
-            this.style.transform = 'scale(1)';
-          }, 200);
-        });
-      });
-    }
+    function renderComparison(metro, regional) {
+      const combined = [
+        ...metro.map(s => ({patronage: parseInt(s.annual_entries) || 0, type:"Metro"})),
+        ...regional.map(s => ({patronage: parseInt(s.Pax_annual) || 0, type:"Regional"}))
+      ];
 
-    // Initialize dashboard when page loads
-    document.addEventListener('DOMContentLoaded', function() {
-      initializeDashboard().then(() => {
-        updateDynamicAnnotations();
-        addChartInteractionFeedback();
-      });
-    });
+      const boxSpec = {
+        "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+        "data":{"values":combined},
+        "mark":{"type":"boxplot","extent":"min-max"},
+        "encoding":{
+          "x":{"field":"type","title":"Station Type"},
+          "y":{"field":"patronage","type":"quantitative","title":"Annual Patronage (Log Scale)","scale":{"type":"log"}},
+          "color":{"field":"type","scale":{"range":["#2563eb","#16a34a"]}}
+        },
+        "width":"container","height":400,"config":{"view":{"stroke":"transparent"}}
+      };
+
+      const totalMetro = metro.reduce((s,d)=> s + (parseInt(d.annual_entries)||0), 0);
+      const totalRegional = regional.reduce((s,d)=> s + (parseInt(d.Pax_annual)||0), 0);
+      const pieData = [{type:"Metro", total:totalMetro},{type:"Regional", total:totalRegional}];
+
+      const pieSpec = {
+        "$schema":"https://vega.github.io/schema/vega-lite/v5.json",
+        "data":{"values":pieData},
+        "mark":{"type":"arc","innerRadius":80},
+        "encoding":{
+          "theta":{"field":"total","type":"quantitative"},
+          "color":{"field":"type","type":"nominal","scale":{"range":["#2563eb","#16a34a"]}},
+          "tooltip":[{"field":"type","title":"System"},{"field":"total","title":"Total Patronage","format":","}]
+        },
+        "width":"container","height":400,"config":{"view":{"stroke":"transparent"}}
+      };
+
+      vegaEmbed("#comparison", boxSpec, {actions:false});
+      vegaEmbed("#share", pieSpec, {actions:false});
+    }
   </script>
 </body>
 </html>
