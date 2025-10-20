@@ -1,24 +1,52 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Top 10 Regional train stations by annual patronage.",
-  "width": "container",
-  "height": 400,
-  "data": {"url": "regional.csv", "format": {"type": "csv"}},
+  "description": "Top 10 Regional Stations (Excluding Southern Cross)",
+  "data": {
+    "url": "regional.csv"
+  },
   "transform": [
-    {"calculate": "toNumber(datum.Pax_annual)", "as": "Pax_annual_num"},
+    {
+      "filter": "!test(/southern\\s*cross/i, datum.Stop_name)"
+    },
+    {
+      "calculate": "toNumber(datum.Pax_annual)",
+      "as": "annual"
+    },
     {
       "window": [{"op": "rank", "as": "rank"}],
-      "sort": [{"field": "Pax_annual_num", "order": "descending"}]
+      "sort": [{"field": "annual", "order": "descending"}]
     },
-    {"filter": "datum.rank <= 10"}
+    {
+      "filter": "datum.rank <= 10"
+    }
   ],
-  "mark": {"type": "bar", "color": "#16a34a"},
+  "mark": {"type": "bar", "cornerRadiusEnd": 4},
   "encoding": {
-    "x": {"field": "Pax_annual_num", "type": "quantitative", "title": "Annual Entries"},
-    "y": {"field": "Stop_name", "type": "nominal", "sort": "-x", "title": "Regional Station"},
+    "y": {
+      "field": "Stop_name",
+      "type": "ordinal",
+      "sort": "-x",
+      "title": "Regional Station",
+      "axis": {"labelLimit": 200}
+    },
+    "x": {
+      "field": "annual",
+      "type": "quantitative",
+      "title": "Annual Patronage",
+      "axis": {"grid": true, "tickCount": 6, "format": "s"}
+    },
+    "color": {
+      "field": "annual",
+      "type": "quantitative",
+      "scale": {"scheme": "greens"},
+      "title": "Patronage Intensity"
+    },
     "tooltip": [
       {"field": "Stop_name", "title": "Station"},
-      {"field": "Pax_annual_num", "title": "Annual Entries", "format": ","}
+      {"field": "annual", "title": "Annual Patronage", "format": ","}
     ]
-  }
+  },
+  "config": {"view": {"stroke": "transparent"}},
+  "width": "container",
+  "height": 400
 }
