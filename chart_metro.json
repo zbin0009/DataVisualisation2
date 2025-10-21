@@ -1,6 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "description": "Top 10 Metro Stations (Excluding Southern Cross)",
+  "title": {"text": "Top 10 Metro Stations", "anchor": "start", "color": "#1e3a8a", "fontSize": 18, "fontWeight": 700},
   "data": {
     "url": "metro.csv"
   },
