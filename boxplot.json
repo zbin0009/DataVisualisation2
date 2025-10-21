@@ -1,0 +1,17 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Metro vs Regional boxplot comparison",
+  "data": {"url": "combined.csv"},
+  "title": {"text": "Metro vs Regional Distribution", "anchor": "start", "color": "#1e3a8a", "fontSize": 18, "fontWeight": 700},
+  "transform": [
+    {"calculate": "toNumber(datum.entries)", "as": "annual"}
+  ],
+  "mark": {"type": "boxplot"},
+  "encoding": {
+    "x": {"field": "type", "type": "nominal", "title": "Network Type"},
+    "y": {"field": "annual", "type": "quantitative", "title": "Annual Patronage", "axis": {"tickCount": 10}},
+    "color": {"field": "type", "type": "nominal", "scale": {"range": ["#1d4ed8", "#059669"]}, "legend": {"title": "Type"}}
+  },
+  "width": 500,
+  "height": 400
+}

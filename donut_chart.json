@@ -1,0 +1,49 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Donut chart showing metro vs regional patronage distribution",
+  "title": {"text": "Patronage Share by Station Type", "anchor": "middle", "fontSize": 14, "dy": -10},
+  "data": {
+    "url": "combined.csv"
+  },
+  "transform": [
+    {
+      "aggregate": [{"op": "sum", "field": "entries", "as": "total_patronage"}],
+      "groupby": ["type"]
+    },
+    {
+      "calculate": "datum.total_patronage / 1000000",
+      "as": "patronage_millions"
+    }
+  ],
+  "mark": {
+    "type": "arc",
+    "innerRadius": 50,
+    "outerRadius": 90,
+    "stroke": "white",
+    "strokeWidth": 2
+  },
+  "encoding": {
+    "theta": {
+      "field": "patronage_millions",
+      "type": "quantitative",
+      "title": "Patronage (Millions)"
+    },
+    "color": {
+      "field": "type",
+      "type": "nominal",
+      "scale": {"scheme": "pastel1"},
+      "title": "Station Type"
+    },
+    "tooltip": [
+      {"field": "type", "title": "Type"},
+      {"field": "patronage_millions", "title": "Patronage (Millions)", "format": ".1f"},
+      {"field": "total_patronage", "title": "Total Patronage", "format": ","}
+    ]
+  },
+  "width": 300,
+  "height": 300,
+  "config": {
+    "view": {"stroke": "transparent"},
+    "background": "#f8fafc"
+  }
+}

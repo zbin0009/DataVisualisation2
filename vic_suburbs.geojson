@@ -1,0 +1,25 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": {"name": "Flinders Street"}, "geometry": {"type": "Polygon", "coordinates": [[[144.90, -37.75],[144.90, -37.85],[145.00, -37.85],[145.00, -37.75],[144.90, -37.75]]]}},
+    { "type": "Feature", "properties": {"name": "Melbourne Central"}, "geometry": {"type": "Polygon", "coordinates": [[[144.95, -37.70],[144.95, -37.80],[145.05, -37.80],[145.05, -37.70],[144.95, -37.70]]]}},
+    { "type": "Feature", "properties": {"name": "Parliament"}, "geometry": {"type": "Polygon", "coordinates": [[[144.90, -37.65],[144.90, -37.75],[145.00, -37.75],[145.00, -37.65],[144.90, -37.65]]]}},
+    { "type": "Feature", "properties": {"name": "Footscray"}, "geometry": {"type": "Polygon", "coordinates": [[[144.80, -37.75],[144.80, -37.85],[144.90, -37.85],[144.90, -37.75],[144.80, -37.75]]]}},
+    { "type": "Feature", "properties": {"name": "Richmond"}, "geometry": {"type": "Polygon", "coordinates": [[[145.00, -37.80],[145.00, -37.90],[145.10, -37.90],[145.10, -37.80],[145.00, -37.80]]]}},
+    { "type": "Feature", "properties": {"name": "Caulfield"}, "geometry": {"type": "Polygon", "coordinates": [[[145.00, -37.90],[145.00, -38.00],[145.10, -38.00],[145.10, -37.90],[145.00, -37.90]]]}},
+    { "type": "Feature", "properties": {"name": "Flagstaff"}, "geometry": {"type": "Polygon", "coordinates": [[[144.85, -37.60],[144.85, -37.70],[144.95, -37.70],[144.95, -37.60],[144.85, -37.60]]]}},
+    { "type": "Feature", "properties": {"name": "South Yarra"}, "geometry": {"type": "Polygon", "coordinates": [[[144.95, -37.85],[144.95, -37.95],[145.05, -37.95],[145.05, -37.85],[144.95, -37.85]]]}},
+    { "type": "Feature", "properties": {"name": "Glenferrie"}, "geometry": {"type": "Polygon", "coordinates": [[[145.05, -37.75],[145.05, -37.85],[145.15, -37.85],[145.15, -37.75],[145.05, -37.75]]]}},
+    { "type": "Feature", "properties": {"name": "Box Hill"}, "geometry": {"type": "Polygon", "coordinates": [[[145.10, -37.75],[145.10, -37.85],[145.20, -37.85],[145.20, -37.75],[145.10, -37.75]]]}},
+    { "type": "Feature", "properties": {"name": "Tarneit Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.60, -37.80],[144.60, -37.90],[144.70, -37.90],[144.70, -37.80],[144.60, -37.80]]]}},
+    { "type": "Feature", "properties": {"name": "Wyndham Vale Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.60, -37.90],[144.60, -38.00],[144.70, -38.00],[144.70, -37.90],[144.60, -37.90]]]}},
+    { "type": "Feature", "properties": {"name": "Geelong Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.30, -38.10],[144.30, -38.20],[144.40, -38.20],[144.40, -38.10],[144.30, -38.10]]]}},
+    { "type": "Feature", "properties": {"name": "Ballarat Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[143.80, -37.50],[143.80, -37.60],[143.90, -37.60],[143.90, -37.50],[143.80, -37.50]]]}},
+    { "type": "Feature", "properties": {"name": "Bendigo Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.20, -36.70],[144.20, -36.80],[144.30, -36.80],[144.30, -36.70],[144.20, -36.70]]]}},
+    { "type": "Feature", "properties": {"name": "Melton Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.50, -37.60],[144.50, -37.70],[144.60, -37.70],[144.60, -37.60],[144.50, -37.60]]]}},
+    { "type": "Feature", "properties": {"name": "Bacchus Marsh Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.40, -37.60],[144.40, -37.70],[144.50, -37.70],[144.50, -37.60],[144.40, -37.60]]]}},
+    { "type": "Feature", "properties": {"name": "Lara Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.35, -37.95],[144.35, -38.05],[144.45, -38.05],[144.45, -37.95],[144.35, -37.95]]]}},
+    { "type": "Feature", "properties": {"name": "South Geelong Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.30, -38.20],[144.30, -38.30],[144.40, -38.30],[144.40, -38.20],[144.30, -38.20]]]}},
+    { "type": "Feature", "properties": {"name": "Marshall Railway Station"}, "geometry": {"type": "Polygon", "coordinates": [[[144.25, -38.15],[144.25, -38.25],[144.35, -38.25],[144.35, -38.15],[144.25, -38.15]]]}}
+  ]
+}

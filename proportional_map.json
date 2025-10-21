@@ -1,0 +1,60 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Proportional symbol map of Victorian stations with interactive filters.",
+  "title": {"text": "Victorian Rail Network - Patronage", "anchor": "start", "color": "#1e3a8a", "fontSize": 18, "fontWeight": 700},
+  "width": "container",
+  "height": 420,
+  "projection": {
+    "type": "mercator",
+    "fit": {"data": {"url": "vic_outline.geojson"}},
+    "clipAngle": 179
+  },
+  "params": [
+    {"name": "MinPatronage", "value": 0},
+    {"name": "TypeSel", "value": "All"}
+  ],
+  "layer": [
+    { "data": {"sphere": true}, "mark": {"type": "geoshape", "fill": "#f8fafc"} },
+    { "data": {"graticule": {"step": [30, 30]}}, "mark": {"type": "geoshape", "stroke": "#94a3b8", "strokeWidth": 0.8, "fill": null, "strokeOpacity": 0.9} },
+    {
+      "data": {"url": "combined.csv"},
+      "transform": [
+        {"calculate": "toNumber(datum.entries)", "as": "entries_q"},
+        {"calculate": "toNumber(datum.longitude)", "as": "lon_q"},
+        {"calculate": "toNumber(datum.latitude)", "as": "lat_q"},
+        {"filter": "(datum.entries_q >= MinPatronage) && (TypeSel == 'All' || lower(datum.type) == lower(TypeSel))"}
+      ],
+      "mark": {"type": "circle", "opacity": 0.85, "stroke": "#ffffff", "strokeWidth": 1},
+      "encoding": {
+        "longitude": {"field": "lon_q", "type": "quantitative"},
+        "latitude": {"field": "lat_q", "type": "quantitative"},
+        "size": {"field": "entries_q", "type": "quantitative", "scale": {"type": "sqrt", "range": [20, 1200], "domain": [100000, 20000000]}, "legend": {"title": "Annual entries", "format": "s"}},
+        "color": {"field": "type", "type": "nominal", "scale": {"domain": ["Metro", "Regional"], "range": ["#ef4444", "#16a34a"]}, "title": "Type"},
+        "tooltip": [
+          {"field": "name", "title": "Station"},
+          {"field": "entries_q", "title": "Annual entries", "format": ","},
+          {"field": "type", "title": "Type"}
+        ]
+      }
+    },
+    {
+      "data": {"url": "combined.csv"},
+      "transform": [
+        {"calculate": "toNumber(datum.entries)", "as": "entries_q"},
+        {"calculate": "toNumber(datum.longitude)", "as": "lon_q"},
+        {"calculate": "toNumber(datum.latitude)", "as": "lat_q"},
+        {"filter": "(datum.entries_q >= MinPatronage) && (TypeSel == 'All' || lower(datum.type) == lower(TypeSel))"},
+        {"window": [{"op": "rank", "as": "r"}], "sort": [{"field": "entries_q", "order": "descending"}]},
+        {"filter": "datum.r <= 6"}
+      ],
+      "mark": {"type": "text", "dy": -8, "fontSize": 10, "fontWeight": 700, "fill": "#0f172a", "stroke": "white", "strokeWidth": 2},
+      "encoding": {
+        "longitude": {"field": "lon_q", "type": "quantitative"},
+        "latitude": {"field": "lat_q", "type": "quantitative"},
+        "text": {"field": "name"}
+      }
+    }
+  ],
+  "config": {"view": {"stroke": null}, "background": "#f8fafc"}
+}
+

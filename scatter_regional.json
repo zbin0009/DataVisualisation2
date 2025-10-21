@@ -1,0 +1,38 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "description": "Scatter plot of distance vs patronage for Regional stations",
+  "title": {"text": "Regional — Distance vs Patronage", "anchor": "start", "color": "#166534", "fontSize": 16, "fontWeight": 700},
+  "data": { "url": "combined.csv", "format": { "type": "csv" } },
+  "params": [ {"name": "MinEntries", "value": 0} ],
+  "transform": [
+    {"calculate": "sqrt(pow(toNumber(datum.latitude)-(-37.8136),2)+pow(toNumber(datum.longitude)-(144.9631),2))*111", "as": "distance_km"},
+    {"calculate": "toNumber(datum.entries)", "as": "entries_q"},
+    {"filter": "datum.entries_q >= MinEntries"},
+    {"filter": "datum.type == 'Regional'"}
+  ],
+  "width": 520,
+  "height": 380,
+  "layer": [
+    {
+      "mark": { "type": "circle", "opacity": 0.7, "filled": true },
+      "encoding": {
+        "x": {"field": "distance_km", "type": "quantitative", "title": "Distance from Melbourne CBD (km)", "axis": {"grid": true, "gridColor": "#e2e8f0", "tickCount": 8}, "scale": {"domain": [0, 160]}},
+        "y": {"field": "entries_q", "type": "quantitative", "title": "Annual Patronage", "axis": {"grid": true, "gridColor": "#e2e8f0", "tickCount": 6}, "scale": {"domain": [0, 2000000]}},
+        "color": {"value": "#16a34a"},
+        "tooltip": [
+          {"field": "name", "title": "Station"},
+          {"field": "distance_km", "title": "Distance (km)", "format": ".1f"},
+          {"field": "entries_q", "title": "Annual Patronage", "format": ","}
+        ]
+      }
+    },
+    {
+      "transform": [ {"regression": "entries_q", "on": "distance_km"} ],
+      "mark": { "type": "line", "strokeWidth": 2, "opacity": 0.85, "color": "#16a34a" },
+      "encoding": { "x": {"field": "distance_km", "type": "quantitative"}, "y": {"field": "entries_q", "type": "quantitative"} }
+    }
+  ],
+  "config": { "view": { "stroke": "transparent" } }
+}
+
+
