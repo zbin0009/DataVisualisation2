@@ -169,10 +169,49 @@
     </div>
   </div>
 
+  <!-- ================= Map Section ================= -->
+  <div class="card">
+    <h3>Victorian Rail Network (Leaflet + Vega Map)</h3>
+    <div class="chart-row">
+      <div id="map" class="chart-half" style="height: 420px; border-radius: 8px; overflow: hidden;"></div>
+      <div id="vega-map" class="chart-half" style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); border-radius: 8px;"></div>
+    </div>
+    <div class="note-grid">
+      <div class="note info">
+        <b>Leaflet map</b>
+        <div>Dots show all stops across Victoria. Dense clusters near the CBD point to interchange pressure; faint lines radiating outward reveal corridor structure. Scan for gaps in coverage and for towns where stations sit far from built‑up areas. Use this view to validate hot spots that appear in other charts.</div>
+      </div>
+      <div class="note info">
+        <b>Vega‑Lite map</b>
+        <div>Circle size shows patronage and colour shows type. Big circles around the CBD confirm the load concentration on inner‑city nodes. Watch for large green circles far from the CBD; these are regional magnets that attract long‑distance trips. Filters help isolate each network and the threshold focuses attention on the busiest stops.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Top Performing Stations ================= -->
+  <div class="card">
+    <h3>Top Performing Stations</h3>
+    <div class="chart-row">
+      <div id="chart-metro" class="chart-half"></div>
+      <div id="chart-regional" class="chart-half"></div>
+    </div>
+    <div class="note-grid">
+      <div class="note story">
+        <b>Metro Top 10 - Key Insights</b>
+        <div><strong>Massive CBD dominance:</strong> Flinders Street (19.6M) and Melbourne Central (12M) carry 60% of all Metro traffic. The top 3 CBD stations serve more passengers than the entire regional network combined. <strong>Critical finding:</strong> A 5% improvement at these 3 stations impacts more passengers than doubling service at 50 suburban stations.</div>
+      </div>
+      <div class="note story">
+        <b>Regional Top 10 - Key Insights</b>
+        <div><strong>Growth corridor concentration:</strong> Tarneit (1.16M) leads regional patronage, followed by Geelong (675K) and Wyndham Vale (716K). These stations serve Melbourne's fastest-growing suburbs. <strong>Impact insight:</strong> These 3 stations generate more patronage than the bottom 200+ stations combined, making them prime targets for capacity upgrades.</div>
+      </div>
+    </div>
+  </div>
+
+
   <!-- ================= Controls ================= -->
   <div class="controls">
     <label><b>Station Type</b>
-      <select>
+      <select id="stationTypeSelect">
         <option>All</option>
         <option>Metro</option>
         <option>Regional</option>
@@ -214,45 +253,6 @@
       <b>Figures:</b> Totals reflect the current filters (Station Type and Minimum Patronage).
     </div>
   </div>
-
-  <!-- ================= Map Section ================= -->
-  <div class="card">
-    <h3>Victorian Rail Network (Leaflet + Vega Map)</h3>
-    <div class="chart-row">
-      <div id="map" class="chart-half" style="height: 420px; border-radius: 8px; overflow: hidden;"></div>
-      <div id="vega-map" class="chart-half" style="background: linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%); border-radius: 8px;"></div>
-    </div>
-    <div class="note-grid">
-      <div class="note info">
-        <b>Leaflet map</b>
-        <div>Dots show all stops across Victoria. Dense clusters near the CBD point to interchange pressure; faint lines radiating outward reveal corridor structure. Scan for gaps in coverage and for towns where stations sit far from built‑up areas. Use this view to validate hot spots that appear in other charts.</div>
-      </div>
-      <div class="note info">
-        <b>Vega‑Lite map</b>
-        <div>Circle size shows patronage and colour shows type. Big circles around the CBD confirm the load concentration on inner‑city nodes. Watch for large green circles far from the CBD; these are regional magnets that attract long‑distance trips. Filters help isolate each network and the threshold focuses attention on the busiest stops.</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ================= Top Performing Stations ================= -->
-  <div class="card">
-    <h3>Top Performing Stations</h3>
-    <div class="chart-row">
-      <div id="chart-metro" class="chart-half"></div>
-      <div id="chart-regional" class="chart-half"></div>
-    </div>
-    <div class="note-grid">
-      <div class="note story">
-        <b>Metro Top 10 - Key Insights</b>
-        <div><strong>Massive CBD dominance:</strong> Flinders Street (19.6M) and Melbourne Central (12M) carry 60% of all Metro traffic. The top 3 CBD stations serve more passengers than the entire regional network combined. <strong>Critical finding:</strong> A 5% improvement at these 3 stations impacts more passengers than doubling service at 50 suburban stations.</div>
-      </div>
-      <div class="note story">
-        <b>Regional Top 10 - Key Insights</b>
-        <div><strong>Growth corridor concentration:</strong> Tarneit (1.16M) leads regional patronage, followed by Geelong (675K) and Wyndham Vale (716K). These stations serve Melbourne's fastest-growing suburbs. <strong>Impact insight:</strong> These 3 stations generate more patronage than the bottom 200+ stations combined, making them prime targets for capacity upgrades.</div>
-      </div>
-    </div>
-  </div>
-
 
   <!-- ================= Correlation ================= -->
   <div class="card">
