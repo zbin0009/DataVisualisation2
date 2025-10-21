@@ -30,9 +30,29 @@
       "transform": [ {"regression": "entries_q", "on": "distance_km"} ],
       "mark": { "type": "line", "strokeWidth": 2, "opacity": 0.85, "color": "#16a34a" },
       "encoding": { "x": {"field": "distance_km", "type": "quantitative"}, "y": {"field": "entries_q", "type": "quantitative"} }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "left",
+        "dx": 10,
+        "dy": -10,
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "fill": "#dc2626"
+      },
+      "encoding": {
+        "x": {"field": "distance_km", "type": "quantitative"},
+        "y": {"field": "entries_q", "type": "quantitative"},
+        "text": {
+          "condition": {
+            "test": "datum.name == 'Tarneit Railway Station'",
+            "value": "Distance-defying: high patronage despite 30km+ distance"
+          },
+          "value": ""
+        }
+      }
     }
   ],
   "config": { "view": { "stroke": "transparent" } }
 }
-
-
