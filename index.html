@@ -16,18 +16,19 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background-color: #f8fafc;
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       color: #1e293b;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
     }
     header {
-      background-color: #2563eb;
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
       color: white;
       text-align: center;
-      padding: 1.5rem 0;
+      padding: 2rem 0;
       font-weight: 600;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     header p { margin: 0.25rem 0 0; font-weight: 400; font-size: 0.9rem; }
 
@@ -45,27 +46,27 @@
     }
 
     .card {
-      background: white;
-      border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-      padding: 1rem 1.5rem;
-      margin: 1rem auto;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+      padding: 2rem;
+      margin: 1.5rem auto;
       width: 90%;
       max-width: 1200px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     h3 { margin-top: 0.5rem; margin-bottom: 1rem; color: #1e3a8a; }
 
     .note {
-      background: #f1f5f9;
-      border-left: 4px solid #2563eb;
-      padding: 0.75rem 1rem;
-      margin-top: 0.75rem;
-      border-radius: 6px;
+      background: rgba(248, 250, 252, 0.8);
+      border-left: 4px solid #3b82f6;
+      padding: 1rem 1.25rem;
+      margin-top: 1rem;
+      border-radius: 8px;
       font-size: 0.9rem;
+      backdrop-filter: blur(5px);
     }
-    .note.info b::before { content: "💡 "; }
-    .note.story b::before { content: "📘 "; }
-    .note.observation b::before { content: "📊 "; }
 
     footer {
       text-align: center;
@@ -83,14 +84,15 @@
       align-items: stretch;
     }
     .kpi-card {
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      padding: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(226, 232, 240, 0.5);
+      border-radius: 16px;
+      padding: 1.5rem;
       text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      backdrop-filter: blur(10px);
     }
-    .kpi-icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
+    .kpi-icon { font-size: 1.6rem; margin-bottom: 0.5rem; }
     .kpi-value { font-weight: 700; font-size: 1.8rem; color: #0f172a; }
     .kpi-label { color: #475569; font-size: 0.9rem; margin-top: 0.25rem; }
 
@@ -228,29 +230,28 @@
     <h3 style="text-align:center; font-size: 1.6rem; color: #1e3a8a; font-weight: 700;">Summary Insights</h3>
     <div class="kpi-grid">
       <div class="kpi-card">
-        <div class="kpi-icon" style="color: #3b82f6; font-size: 1.5rem;">🏢</div>
+        <div class="kpi-icon" style="color: #3b82f6;">Stations</div>
         <div id="kpi-total-stations" class="kpi-value">-</div>
         <div class="kpi-label">Total Stations</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon" style="color: #3b82f6; font-size: 1.5rem;">📊</div>
+        <div class="kpi-icon" style="color: #3b82f6;">Patronage</div>
         <div id="kpi-total-patronage" class="kpi-value">-</div>
         <div class="kpi-label">Total Annual Patronage</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon" style="color: #3b82f6; font-size: 1.5rem;">📈</div>
+        <div class="kpi-icon" style="color: #3b82f6;">Average</div>
         <div id="kpi-avg-patronage" class="kpi-value">-</div>
         <div class="kpi-label">Average Patronage</div>
       </div>
       <div class="kpi-card">
-        <div class="kpi-icon" style="color: #fbbf24; font-size: 1.5rem;">⭐</div>
+        <div class="kpi-icon" style="color: #f59e0b;">Busiest</div>
         <div id="kpi-busiest" class="kpi-value">-</div>
         <div class="kpi-label">Busiest Station</div>
       </div>
     </div>
-    <div class="note info" style="text-align:center; max-width: 800px; margin-left:auto; margin-right:auto; display: flex; align-items: center; justify-content: center;">
-      <span style="font-size: 1.2rem; margin-right: 8px;">💡</span>
-      <b>Figures:</b> Totals reflect the current filters (Station Type and Minimum Patronage).
+    <div class="note info" style="text-align:center; max-width: 800px; margin-left:auto; margin-right:auto;">
+      <b>Note:</b> Totals reflect the current filters (Station Type and Minimum Patronage).
     </div>
   </div>
 
@@ -319,13 +320,13 @@
   </div>
 
   <!-- ================= References ================= -->
-  <footer>
-    <b>📚 Data & Tools:</b>
-    <ul style="margin-top:0.5rem; line-height:1.6;">
-      <li><a href="https://discover.data.vic.gov.au/dataset/annual-metropolitan-train-station-patronage-station-entries/resource/c9507eb5-aa48-4a43-aa09-c10a24d1f2fe?utm_source" target="_blank" rel="noopener">Metropolitan Train Station Patronage Data</a></li>
-      <li><a href="https://discover.data.vic.gov.au/dataset/annual-regional-train-station-patronage-station-entries/resource/a5d6eb97-0555-4c8d-9dc7-316c6062cc57?utm_source" target="_blank" rel="noopener">Regional Train Station Patronage Data</a></li>
-      <li><a href="https://vega.github.io/vega-lite/" target="_blank" rel="noopener">Vega‑Lite Visualisation Framework</a></li>
-      <li><a href="https://leafletjs.com/" target="_blank" rel="noopener">Leaflet Interactive Mapping Library</a></li>
+  <footer style="background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); border-radius: 16px; margin: 2rem auto; padding: 2rem; max-width: 1200px; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
+    <h4 style="color: #1e3a8a; margin-top: 0; margin-bottom: 1rem;">Data Sources & Tools</h4>
+    <ul style="margin-top:0.5rem; line-height:1.8; list-style: none; padding: 0;">
+      <li style="margin-bottom: 0.5rem;"><a href="https://discover.data.vic.gov.au/dataset/annual-metropolitan-train-station-patronage-station-entries/resource/c9507eb5-aa48-4a43-aa09-c10a24d1f2fe?utm_source" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: none;">Metropolitan Train Station Patronage Data</a></li>
+      <li style="margin-bottom: 0.5rem;"><a href="https://discover.data.vic.gov.au/dataset/annual-regional-train-station-patronage-station-entries/resource/a5d6eb97-0555-4c8d-9dc7-316c6062cc57?utm_source" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: none;">Regional Train Station Patronage Data</a></li>
+      <li style="margin-bottom: 0.5rem;"><a href="https://vega.github.io/vega-lite/" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: none;">Vega‑Lite Visualisation Framework</a></li>
+      <li><a href="https://leafletjs.com/" target="_blank" rel="noopener" style="color: #3b82f6; text-decoration: none;">Leaflet Interactive Mapping Library</a></li>
     </ul>
   </footer>
 
