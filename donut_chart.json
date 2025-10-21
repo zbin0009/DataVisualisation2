@@ -15,31 +15,47 @@
       "as": "patronage_millions"
     }
   ],
-  "mark": {
-    "type": "arc",
-    "innerRadius": 50,
-    "outerRadius": 90,
-    "stroke": "white",
-    "strokeWidth": 2
-  },
-  "encoding": {
-    "theta": {
-      "field": "patronage_millions",
-      "type": "quantitative",
-      "title": "Patronage (Millions)"
+  "layer": [
+    {
+      "mark": {
+        "type": "arc",
+        "innerRadius": 50,
+        "outerRadius": 90,
+        "stroke": "white",
+        "strokeWidth": 2
+      },
+      "encoding": {
+        "theta": {
+          "field": "patronage_millions",
+          "type": "quantitative",
+          "title": "Patronage (Millions)"
+        },
+        "color": {
+          "field": "type",
+          "type": "nominal",
+          "scale": {"range": ["#1d4ed8", "#059669"]},
+          "title": "Station Type"
+        },
+        "tooltip": [
+          {"field": "type", "title": "Type"},
+          {"field": "patronage_millions", "title": "Patronage (Millions)", "format": ".1f"},
+          {"field": "total_patronage", "title": "Total Patronage", "format": ","}
+        ]
+      }
     },
-    "color": {
-      "field": "type",
-      "type": "nominal",
-      "scale": {"scheme": "pastel1"},
-      "title": "Station Type"
-    },
-    "tooltip": [
-      {"field": "type", "title": "Type"},
-      {"field": "patronage_millions", "title": "Patronage (Millions)", "format": ".1f"},
-      {"field": "total_patronage", "title": "Total Patronage", "format": ","}
-    ]
-  },
+    {
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "fontSize": 11,
+        "fontWeight": "bold",
+        "fill": "#dc2626"
+      },
+      "encoding": {
+        "text": {"value": "Metro dominates:\n85% of all journeys"}
+      }
+    }
+  ],
   "width": 300,
   "height": 300,
   "config": {
