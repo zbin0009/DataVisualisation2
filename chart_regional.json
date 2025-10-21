@@ -1,52 +1,28 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-  "description": "Top 10 Regional Stations (Excluding Southern Cross)",
-  "data": {
-    "url": "regional.csv"
+  "description": "Top 10 Regional Stations Bar Chart",
+  "data": {"url": "regional.csv"},
+  "title": {
+    "text": "Top 10 Regional Stations",
+    "color": "#1e3a8a",
+    "fontSize": 18,
+    "fontWeight": 700
   },
   "transform": [
-    {
-      "filter": "!test(/southern\\s*cross/i, datum.Stop_name)"
-    },
-    {
-      "calculate": "toNumber(datum.Pax_annual)",
-      "as": "annual"
-    },
-    {
-      "window": [{"op": "rank", "as": "rank"}],
-      "sort": [{"field": "annual", "order": "descending"}]
-    },
-    {
-      "filter": "datum.rank <= 10"
-    }
+    {"calculate": "toNumber(datum.Pax_annual)", "as": "numeric_pax"},
+    {"window": [{"op": "rank", "as": "rank", "sort": {"field": "numeric_pax", "order": "descending"}}]},
+    {"filter": "datum.rank <= 10"}
   ],
-  "mark": {"type": "bar", "cornerRadiusEnd": 4},
+  "mark": {"type": "bar", "stroke": "white", "strokeWidth": 1},
   "encoding": {
-    "y": {
-      "field": "Stop_name",
-      "type": "ordinal",
-      "sort": "-x",
-      "title": "Regional Station",
-      "axis": {"labelLimit": 200}
-    },
-    "x": {
-      "field": "annual",
-      "type": "quantitative",
-      "title": "Annual Patronage",
-      "axis": {"grid": true, "tickCount": 6, "format": "s"}
-    },
-    "color": {
-      "field": "annual",
-      "type": "quantitative",
-      "scale": {"scheme": "greens"},
-      "title": "Patronage Intensity"
-    },
+    "x": {"field": "numeric_pax", "type": "quantitative", "title": "Annual Patronage"},
+    "y": {"field": "Stop_name", "type": "nominal", "title": "Regional Station", "sort": {"field": "numeric_pax", "order": "descending"}},
+    "color": {"field": "numeric_pax", "type": "quantitative", "scale": {"scheme": "greens"}},
     "tooltip": [
-      {"field": "Stop_name", "title": "Station"},
-      {"field": "annual", "title": "Annual Patronage", "format": ","}
+      {"field": "Stop_name", "type": "nominal", "title": "Station"},
+      {"field": "numeric_pax", "type": "quantitative", "format": ",.0f", "title": "Annual Patronage"}
     ]
   },
-  "config": {"view": {"stroke": "transparent"}},
   "width": "container",
-  "height": 400
+  "height": 380
 }
